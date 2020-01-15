@@ -1,32 +1,34 @@
 import { add } from './helpers';
 import { Observable } from 'rxjs';
 
-const o = new Observable(observer => {
-  setInterval(() => {
-    observer.next('Observable every second');
-  }, 1000);
+// function Observable(subscriber){
+//     subscriber.next("Hello Universe!");
+// }
+
+const observer = {
+  next: add.li,
+  error: add.li,
+  complete: () => {
+    add.li('There are no more values!');
+  }
+};
+
+// Observable(observer);
+
+// class Observable{
+//     constructor(subscribTo){
+//         this.subscribTo = subscribTo;
+//     }
+
+//     subscribe(observer){
+//         return this.subscribTo(observer);
+//     }
+// }
+
+const producer = new Observable(subscribe => {
+  subscribe.next('Hello from the Observable class');
+  subscribe.complete();
+  subscribe.next('something I forgot');
 });
 
-const p = new Promise((resolve, reject) => {
-  setTimeout(() => {
-    resolve('Promise');
-  }, 1000);
-});
-
-//Promise
-p.then(message => {
-  add.li(message);
-});
-
-//Observable subscribe (next, error, complete)
-const subscription = o.subscribe({
-  next: message => {
-    add.li(message);
-  },
-  error: error => console.error(error),
-  complete: () => add.li('This Observable is complete')
-});
-
-setTimeout(() => {
-  subscription.unsubscribe();
-}, 3000);
+producer.subscribe(observer);
