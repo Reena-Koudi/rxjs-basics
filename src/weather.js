@@ -1,6 +1,14 @@
-import { fromEvent } from 'rxjs';
-import {} from 'rxjs/operators';
-import {} from './helpers';
+import { ajax } from 'rxjs/ajax';
+import { fromEvent, BehaviorSubject, Subject, from, combineLatest } from 'rxjs';
+import {
+  tap,
+  debounce,
+  debounceTime,
+  switchMap,
+  skipWhile,
+  pluck
+} from 'rxjs/operators';
+import { add } from './helpers';
 
 // Handles to our Elements
 const searchBox = document.getElementById('search');
@@ -43,3 +51,14 @@ const inputData = inputSubject
 searchEvent.subscribe(ev => {
   inputSubject.next(searchBox.value);
 });
+
+const placeData = resultsEvent
+  .pipe(
+    switchMap(ev => {
+      const id = ev.target.getAttribute('data');
+      return ajax.getJSON(`http://localhost:3000/place/${id}`);
+    })
+  )
+  .subscribe(place => {
+    placeSubject.next(place);
+  });
